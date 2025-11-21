@@ -1,0 +1,436 @@
+.manual-food-input {
+  padding: 2rem;
+  min-height: calc(100vh - 100px);
+}
+
+.manual-food-input .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.manual-food-input .header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.manual-food-input .header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.manual-food-input .header p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.manual-food-input .content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .manual-food-input .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manual-food-input .input-section {
+  padding: 3rem;
+}
+
+.manual-food-input .card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.manual-food-input .food-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.manual-food-input .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.manual-food-input .form-group label {
+  font-weight: 500;
+  color: #444;
+}
+
+.manual-food-input .form-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.manual-food-input .form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.manual-food-input .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .manual-food-input .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manual-food-input .error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.manual-food-input .btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.manual-food-input .btn-submit:hover:not(.btn-loading) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.manual-food-input .btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.manual-food-input .results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.manual-food-input .results-section .card {
+  margin-bottom: 1.5rem;
+}
+
+.manual-food-input .result-header {
+  margin-bottom: 1.5rem;
+}
+
+.manual-food-input .food-summary h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.manual-food-input .food-summary p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.manual-food-input .nutrition-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.manual-food-input .nutrition-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.manual-food-input .nutrition-source {
+  margin-left: auto;
+}
+
+.manual-food-input .source-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.manual-food-input .source-verified {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.manual-food-input .source-ai {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.manual-food-input .nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.manual-food-input .nutrition-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.manual-food-input .nutrition-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.manual-food-input .nutrition-low {
+  color: #4caf50;
+}
+
+.manual-food-input .nutrition-medium {
+  color: #ff9800;
+}
+
+.manual-food-input .nutrition-high {
+  color: #f44336;
+}
+
+.manual-food-input .nutrition-normal {
+  color: #2196f3;
+}
+
+.manual-food-input .nutrition-label {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+.manual-food-input .ai-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #fff8e1;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #5d4037;
+  margin-top: 1rem;
+}
+
+.manual-food-input .ai-disclaimer .icon {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.manual-food-input .summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.manual-food-input .summary-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.manual-food-input .summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.manual-food-input .summary-item {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.manual-food-input .summary-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
+
+.manual-food-input .summary-text {
+  color: #666;
+  line-height: 1.5;
+}
+
+.manual-food-input .per-unit-info {
+  padding: 1rem 0;
+}
+
+.manual-food-input .per-unit-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.manual-food-input .per-unit-item:last-child {
+  border-bottom: none;
+}
+
+.manual-food-input .per-unit-label {
+  font-weight: 500;
+  color: #444;
+}
+
+.manual-food-input .per-unit-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.manual-food-input .autocomplete-container {
+  position: relative;
+}
+
+.manual-food-input .autocomplete-input {
+  width: 100%;
+}
+
+.manual-food-input .suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  margin-top: 0.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.manual-food-input .suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.manual-food-input .suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.manual-food-input .suggestion-item:hover,
+.manual-food-input .suggestion-selected {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.manual-food-input .suggestion-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.manual-food-input .suggestion-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.manual-food-input .suggestion-brand {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.manual-food-input .suggestion-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.manual-food-input .suggestion-calories {
+  font-weight: 500;
+  color: #16a34a;
+}
+
+.manual-food-input .suggestion-serving {
+  color: #666;
+}
+
+.manual-food-input .glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+.manual-food-input .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .manual-food-input {
+    padding: 1rem;
+  }
+  
+  .manual-food-input .header h1 {
+    font-size: 2rem;
+  }
+  
+  .manual-food-input .input-section {
+    padding: 1.5rem;
+  }
+}
