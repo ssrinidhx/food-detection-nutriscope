@@ -24,9 +24,9 @@ client = InferenceHTTPClient(
 )
 
 indian_workflows = [
-    {"workspace": "workspace_name", "workflow_id": "workflowid_name"},
-    {"workspace": "workspace_name", "workflow_id": "workflowid_name"},
-    {"workspace": "workspace_name", "workflow_id": "workflowid_name"}
+    {"workspace": "your-workspace-name", "workflow_id": "your-workflow-id"},
+    {"workspace": "your-workspace-name", "workflow_id": "your-workflow-id"},
+    {"workspace": "your-workspace-name", "workflow_id": "your-workflow-id"}
 ]
 
 MODEL_PATH = r"D:\NutriScope\backend\models\yolov8l.pt"
@@ -84,12 +84,15 @@ def get_ai_nutrition(food_name):
         "carbs_g": number
     }}
     """
+
     try:
         response = co.chat(
             model="command-xlarge-nightly",
             message=prompt
         )
-        text = response.text.strip() 
+
+        text = response.text.strip()
+
         try:
             nutrition_info = json.loads(text)
         except json.JSONDecodeError:
@@ -98,14 +101,17 @@ def get_ai_nutrition(food_name):
             protein = re.search(r'"protein_g"\s*:\s*([\d.]+)', text)
             fat = re.search(r'"fat_g"\s*:\s*([\d.]+)', text)
             carbs = re.search(r'"carbs_g"\s*:\s*([\d.]+)', text)
+
             nutrition_info = {
                 "calories": float(calories.group(1)) if calories else 0,
                 "protein_g": float(protein.group(1)) if protein else 0,
                 "fat_g": float(fat.group(1)) if fat else 0,
                 "carbs_g": float(carbs.group(1)) if carbs else 0
             }
+
         nutrition_info["source"] = "cohere_ai"
         return nutrition_info
+
     except Exception as e:
         print(f"[ERROR] Cohere AI nutrition error: {str(e)}")
         return {
@@ -120,9 +126,11 @@ def run_yolo_international(image_path):
     try:
         if yolo_model is None:
             return {"food": "Unknown", "confidence": 0, "type": "International", "error": "YOLO model not available"}
+            
         results = yolo_model(image_path, imgsz=640) 
         detections = []
         ignore_classes = ["juice", "fork", "plate", "glass", "cup", "knife", "spoon", "bowl"]
+
         for result in results:
             for box in result.boxes:
                 class_id = int(box.cls[0])
@@ -130,14 +138,17 @@ def run_yolo_international(image_path):
                 class_name = yolo_model.names.get(class_id, "Unknown").lower()
                 x1, y1, x2, y2 = box.xyxy[0].tolist()
                 area = (x2 - x1) * (y2 - y1)
+
                 detections.append({
                     "class": class_name,
                     "confidence": confidence,
                     "area": area
                 })
+
         detections = [d for d in detections if d["class"] not in ignore_classes]
         if not detections:
             return {"food": "Unknown", "confidence": 0, "type": "International"}
+
         class_counter = {}
         for d in detections:
             if d["class"] not in class_counter:
@@ -145,14 +156,17 @@ def run_yolo_international(image_path):
             class_counter[d["class"]]["count"] += 1
             class_counter[d["class"]]["total_area"] += d["area"]
             class_counter[d["class"]]["max_conf"] = max(class_counter[d["class"]]["max_conf"], d["confidence"])
+
         top_class = max(class_counter.items(), key=lambda x: x[1]["total_area"])
         selected_food = top_class[0]
         selected_conf = top_class[1]["max_conf"]
+
         return {
             "food": selected_food,
             "confidence": selected_conf,
             "type": "International"
         }
+
     except Exception as e:
         return {"food": "Unknown", "confidence": 0, "type": "International", "error": str(e)}
 
@@ -160,6 +174,7 @@ def run_indian_workflows(image_path):
     indian_predictions = []
     original_mapping = {}
     confidences = []
+
     for wf in indian_workflows:
         try:
             res = client.run_workflow(
@@ -180,8 +195,10 @@ def run_indian_workflows(image_path):
                         original_mapping[norm] = orig_name
         except Exception:
             continue
+
     if not indian_predictions:
         return None, None
+
     most_common_norm, count = Counter(indian_predictions).most_common(1)[0]
     avg_conf = sum(confidences) / len(confidences) if confidences else 0
     if count >= 2 and avg_conf >= INDIAN_CONF_THRESHOLD:
@@ -191,9 +208,11 @@ def run_indian_workflows(image_path):
 def generate_nutrition_summary(nutrition):
     targets = {"calories": 500, "protein_g": 25, "fat_g": 20, "carbs_g": 50}
     summary = {}
+
     for key in ["calories", "protein_g", "fat_g", "carbs_g"]:
         value = nutrition.get(key, 0)
         target = targets[key]
+
         if key == "protein_g":
             if value < 0.7 * target:
                 summary[key] = f"Low protein ({value}g) – consider increasing protein intake in upcoming meals."
@@ -222,6 +241,7 @@ def generate_nutrition_summary(nutrition):
                 summary[key] = f"High calories ({value} kcal) – consider portion control for remaining meals."
             else:
                 summary[key] = f"Moderate calories ({value} kcal) – reasonable calorie intake for this meal."
+
     return summary
 
 @app.route("/predict", methods=["POST"])
@@ -229,14 +249,19 @@ def predict():
     try:
         if "image" not in request.files or "food_type" not in request.form:
             return jsonify({"error": "No image uploaded or food_type missing"}), 400
+
         food_type = request.form["food_type"].lower()
         file = request.files["image"]
+        
         if file.filename == '':
             return jsonify({"error": "No file selected"}), 400
+            
         filename = file.filename
         save_path = DATA_DIR / filename
         file.save(str(save_path))
+        
         print(f"[INFO] Processing {filename} as {food_type} food")
+
         if food_type == "international":
             result = run_yolo_international(str(save_path))
             final_food = result["food"]
@@ -254,19 +279,24 @@ def predict():
                 print(f"[INFO] ⚠️ Indian workflow returned no confident prediction")
         else:
             return jsonify({"error": "Invalid food_type. Choose 'Indian' or 'International'."}), 400
+
         nutrition_info = get_nutrition(final_food)
+
         if not nutrition_info:
             print(f"[INFO] Nutritionix failed → using AI for {final_food}")
             nutrition_info = get_ai_nutrition(final_food)
         nutrition_summary = generate_nutrition_summary(nutrition_info)
+
         final_result = {
             "food": final_food,
             "type": final_type,
             "nutrition": nutrition_info,
             "summary": nutrition_summary
         }
+
         print(f"[INFO] Prediction → {final_result}")
         return jsonify(final_result)
+        
     except Exception as e:
         print(f"[ERROR] Prediction failed: {str(e)}")
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
@@ -275,26 +305,34 @@ def predict():
 def manual_nutrition():
     try:
         data = request.get_json()
+        
         if not data or "food_name" not in data:
             return jsonify({"error": "Food name is required"}), 400
+            
         food_name = data["food_name"]
         quantity = data.get("quantity", 100)
         unit = data.get("unit", "grams")
+        
         nutrition_info = get_nutrition(food_name)
+        
         if not nutrition_info:
             print(f"[INFO] Nutritionix failed → using AI for {food_name}")
             nutrition_info = get_ai_nutrition(food_name)
             source = "cohere_ai"
         else:
             source = "nutritionix"
+            
         multiplier = unit == "count" and quantity or quantity / 100
+        
         total_nutrition = {
             "calories": round(nutrition_info["calories"] * multiplier),
             "protein_g": round(nutrition_info["protein_g"] * multiplier, 1),
             "fat_g": round(nutrition_info["fat_g"] * multiplier, 1),
             "carbs_g": round(nutrition_info["carbs_g"] * multiplier, 1)
         }
+        
         nutrition_summary = generate_nutrition_summary(nutrition_info)
+        
         result = {
             "food_name": food_name,
             "quantity": quantity,
@@ -304,7 +342,9 @@ def manual_nutrition():
             "summary": nutrition_summary,
             "source": source
         }
+        
         return jsonify(result)
+        
     except Exception as e:
         print(f"[ERROR] Manual nutrition calculation failed: {str(e)}")
         return jsonify({"error": "Failed to calculate nutrition information"}), 500
@@ -315,6 +355,7 @@ def food_suggestions():
         query = request.args.get("query", "")
         if not query:
             return jsonify({"common": [], "branded": []})
+        
         url = "https://trackapi.nutritionix.com/v2/search/instant"
         headers = {
             "x-app-id": NUTRITIONIX_APP_ID,
@@ -323,10 +364,14 @@ def food_suggestions():
         params = {
             "query": query
         }
+        
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
+        
         data = response.json()
+        
         suggestions = []
+        
         if "common" in data:
             for item in data["common"][:10]:
                 suggestions.append({
@@ -335,6 +380,7 @@ def food_suggestions():
                     "serving_unit": item.get("serving_unit", ""),
                     "serving_qty": item.get("serving_qty", 1)
                 })
+        
         if "branded" in data:
             for item in data["branded"][:10]:
                 suggestions.append({
@@ -346,6 +392,7 @@ def food_suggestions():
                 })
         
         return jsonify({"suggestions": suggestions})
+        
     except Exception as e:
         print(f"[ERROR] Food suggestions error: {str(e)}")
         return jsonify({"suggestions": []})
