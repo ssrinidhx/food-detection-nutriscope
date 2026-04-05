@@ -83,6 +83,60 @@ const ManualFoodInput = () => {
     }
   };
 
+  const generateSummary = (nutrition) => {
+    const targets = {
+      calories: 500,
+      protein_g: 25,
+      fat_g: 20,
+      carbs_g: 50,
+    };
+
+    const summary = {};
+
+    Object.keys(targets).forEach((key) => {
+      const value = nutrition[key] || 0;
+      const target = targets[key];
+
+      if (key === "protein_g") {
+        if (value < 0.7 * target)
+          summary[key] = `Low protein (${value}g) – consider increasing protein intake in your next meal to support muscle health and satiety.`;
+        else if (value > 1.3 * target)
+          summary[key] = `High protein (${value}g) – good for muscle recovery, but balance protein intake across the day.`;
+        else
+          summary[key] = `Moderate protein (${value}g) – protein intake is well-balanced for this meal.`;
+      }
+
+      else if (key === "fat_g") {
+        if (value < 0.5 * target)
+          summary[key] = `Low fat (${value}g) – ensure adequate healthy fats in later meals for proper nutrient absorption.`;
+        else if (value > 1.2 * target)
+          summary[key] = `High fat (${value}g) – consider reducing high-fat foods in upcoming meals.`;
+        else
+          summary[key] = `Moderate fat (${value}g) – fat intake is balanced for this meal.`;
+      }
+
+      else if (key === "carbs_g") {
+        if (value < 0.5 * target)
+          summary[key] = `Low carbohydrates (${value}g) – you may need additional carbs later for sustained energy.`;
+        else if (value > 1.2 * target)
+          summary[key] = `High carbohydrates (${value}g) – monitor portions to avoid excess daily intake.`;
+        else
+          summary[key] = `Moderate carbohydrates (${value}g) – carbohydrate intake is well-balanced.`;
+      }
+
+      else if (key === "calories") {
+        if (value < 0.5 * target)
+          summary[key] = `Low calorie intake (${value} kcal) – this is a light meal; ensure adequate energy intake later.`;
+        else if (value > 1.2 * target)
+          summary[key] = `High calorie intake (${value} kcal) – consider lighter meals later to maintain balance.`;
+        else
+          summary[key] = `Moderate calorie intake (${value} kcal) – energy intake is appropriate for this meal.`;
+      }
+    });
+
+    return summary;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!foodName.trim()) {
@@ -116,6 +170,9 @@ const ManualFoodInput = () => {
       const data = await response.json();
       
       if (response.ok) {
+        if (data.total_nutrition) {
+          data.summary = generateSummary(data.total_nutrition);
+        }
         setResult(data);
       } else {
         setError(data.error || 'Failed to fetch nutrition data');

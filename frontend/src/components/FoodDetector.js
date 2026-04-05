@@ -48,6 +48,40 @@ const FoodDetector = () => {
     }
   };
 
+  const generateSummary = (nutrition) => {
+    const summary = {};
+
+    if (nutrition.calories < 300)
+      summary.calories = `${nutrition.calories} kcal – this is a low-calorie meal and may not provide sufficient energy on its own. Consider adding nutrient-dense foods if this is your main meal.`;
+    else if (nutrition.calories <= 600)
+      summary.calories = `${nutrition.calories} kcal – this meal provides a balanced amount of energy and fits well within a typical per-meal calorie range.`;
+    else
+      summary.calories = `${nutrition.calories} kcal – this is a high-calorie meal. Consider lighter meals later in the day to maintain overall calorie balance.`;
+
+    if (nutrition.protein_g < 10)
+      summary.protein_g = `${nutrition.protein_g}g protein – protein content is low. Including protein-rich foods in your next meal can help support muscle maintenance and improve satiety.`;
+    else if (nutrition.protein_g <= 30)
+      summary.protein_g = `${nutrition.protein_g}g protein – protein intake is adequate and supports muscle health and sustained fullness.`;
+    else
+      summary.protein_g = `${nutrition.protein_g}g protein – this is a high-protein meal, which is beneficial for muscle recovery and satiety. Balance protein intake across the day.`;
+
+    if (nutrition.fat_g < 10)
+      summary.fat_g = `${nutrition.fat_g}g fat – fat content is low. Ensure you include healthy fats in other meals for proper nutrient absorption and hormonal balance.`;
+    else if (nutrition.fat_g <= 25)
+      summary.fat_g = `${nutrition.fat_g}g fat – fat intake is moderate and appropriate for a balanced meal.`;
+    else
+      summary.fat_g = `${nutrition.fat_g}g fat – this meal is relatively high in fat. Consider moderating high-fat foods in upcoming meals to maintain dietary balance.`;
+
+    if (nutrition.carbs_g < 30)
+      summary.carbs_g = `${nutrition.carbs_g}g carbohydrates – carbohydrate content is low and may provide limited immediate energy. Additional carbs may be needed depending on your activity level.`;
+    else if (nutrition.carbs_g <= 70)
+      summary.carbs_g = `${nutrition.carbs_g}g carbohydrates – carbohydrate intake is balanced and provides a good source of energy for daily activities.`;
+    else
+      summary.carbs_g = `${nutrition.carbs_g}g carbohydrates – this is a high-carbohydrate meal. Monitoring portion sizes can help avoid excess daily intake.`;
+
+    return summary;
+  };
+
   const handleAnalyze = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
@@ -78,6 +112,8 @@ const FoodDetector = () => {
         data.nutrition.carbs_g = Math.round(data.nutrition.carbs_g * multiplier * 10) / 10;
         data.quantity = quantity;
         data.unit = unit;
+        data.summary = generateSummary(data.nutrition);
+
       }
       
       setResult(data);
