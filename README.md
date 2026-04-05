@@ -45,20 +45,24 @@ NutriScope/
 │   ├── public/
 │   │   └── index.html
 │   ├── src/
-│   │   ├── App.js
 │   │   ├── App.css
+│   │   ├── App.js
+│   │   ├── index.css
 │   │   ├── index.js
-│   │   ├── components/
-│   │   │   ├── HomePage.js / HomePage.css
-│   │   │   ├── FoodDetector.js / FoodDetector.css
-│   │   │   ├── UploadImage.js
-│   │   │   ├── Navbar.js / Navbar.css
-│   │   │   └── logo.svg
+│   │   ├── logo.svg
+│   │   └── components/
+│   │       ├── FoodDetector.js 
+│   │       ├── FoodDetector.css
+│   │       ├── HomePage.js
+│   │       ├── HomePage.css
+│   │       ├── ManualFoodInput.js
+│   │       ├── ManualFoodInput.css
+│   │       ├── Navbar.js 
+│   │       ├── Navbar.css
+│   │       └── UploadImage.js
 │   ├── package.json
 │   └── package-lock.json
 │
-├── requirements.txt
-├── .gitignore
 └── README.md
 ```
 
